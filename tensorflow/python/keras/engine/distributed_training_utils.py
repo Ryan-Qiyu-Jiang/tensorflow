@@ -563,13 +563,16 @@ def _prepare_feed_values(model, inputs, targets, sample_weights, mode):
   inputs, targets, sample_weights = _get_input_from_iterator(inputs, model)
   inputs = flatten_perdevice_values(strategy, inputs)
   targets = flatten_perdevice_values(strategy, targets)
+  sample_weights = flatten_perdevice_values(strategy, sample_weights)
+
   if mode == ModeKeys.PREDICT:
     sample_weights = []
     targets = []
-  else:
-    sample_weights = [
-        None for _ in range(len(model.outputs) * strategy.num_replicas_in_sync)
-    ]
+  # else:
+
+  #   sample_weights = [
+  #       None for _ in range(len(model.outputs) * strategy.num_replicas_in_sync)
+  #   ]
   ins = inputs + targets + sample_weights
   if mode == ModeKeys.TRAIN and not isinstance(K.symbolic_learning_phase(),
                                                int):

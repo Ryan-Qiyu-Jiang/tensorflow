@@ -117,6 +117,8 @@ def model_iteration(model,
       ValueError: in case of invalid arguments.
   """
   # Backwards compatibility.
+  print("RYAN IN array model iteration")
+
   if 'steps' in kwargs:
     steps_per_epoch = kwargs.pop('steps')
   if kwargs:
@@ -127,6 +129,7 @@ def model_iteration(model,
   input_iterator = None
   is_dataset = isinstance(inputs,
                           (dataset_ops.DatasetV1, dataset_ops.DatasetV2))
+  print("RYAN is dataset", is_dataset, "samples", sample_weights)
   # TODO(fchollet): consider moving `steps_per_epoch` inference to
   # _standardize_user_data and set reset_dataset_after_each_epoch as an
   # attribute on the dataset instance.
@@ -346,6 +349,7 @@ def model_iteration(model,
 
     aggregator.finalize()
     results = aggregator.results
+    print("RYAN results",results)
     epoch_logs = cbks.make_logs(model, epoch_logs, results, mode)
     if len(results) == 1:
       results = results[0]
@@ -440,6 +444,10 @@ def _prepare_feed_values(model, inputs, targets, sample_weights, mode):
   Returns:
     Feed values for the model in the given mode.
   """
+  print("RYAN 1",sample_weights)
+  if isinstance(inputs, (dataset_ops.DatasetV1, dataset_ops.DatasetV2,
+                         iterator_ops.Iterator)):
+                         print('RYAN has dataset')
   if model._distribution_strategy:
     if isinstance(inputs, (dataset_ops.DatasetV1, dataset_ops.DatasetV2)):
       inputs = distributed_training_utils.get_iterator(
@@ -459,7 +467,10 @@ def _prepare_feed_values(model, inputs, targets, sample_weights, mode):
     if context.executing_eagerly():
       return get_distributed_inputs
     else:
-      return get_distributed_inputs()
+      d_ins = get_distributed_inputs()
+      print("RYAN Dis_inputs",d_ins[2])
+
+      return d_ins
 
   if isinstance(inputs, (dataset_ops.DatasetV1, dataset_ops.DatasetV2,
                          iterator_ops.Iterator)):
@@ -471,6 +482,8 @@ def _prepare_feed_values(model, inputs, targets, sample_weights, mode):
   targets = targets or []
   sample_weights = sample_weights or []
   ins = inputs + targets + sample_weights
+  print("RYAN sample weights input")
+  print(ins[2])
   if mode == ModeKeys.TRAIN and not isinstance(K.symbolic_learning_phase(),
                                                int):
     ins += [True]  # Add learning phase value.

@@ -231,9 +231,9 @@ class Model(Network):
     # Validate that arguments passed by the user to `compile` are supported by
     # DistributionStrategy.
     if self._distribution_strategy:
-      if sample_weight_mode:
-        raise NotImplementedError('sample_weight_mode is not supported with '
-                                  'DistributionStrategy.')
+      # if sample_weight_mode:
+      #   raise NotImplementedError('sample_weight_mode is not supported with '
+      #                             'DistributionStrategy.')
       if weighted_metrics:
         raise NotImplementedError('weighted_metrics is not supported with '
                                   'DistributionStrategy.')
@@ -666,9 +666,9 @@ class Model(Network):
     # models), set run_eagerly to True as there's no support for graph
     # functions.
     training_utils.set_run_eagerly_for_dict_structure(self, x)
-
     # Case 1: distribution strategy.
     if self._distribution_strategy:
+      print('RYAN IN DISTRIBUTED')
       if K.in_multi_worker_mode():
         # Multi-Worker mode runs the Keras training loop on multiple
         # servers via the Distribute Coordinator.
@@ -809,7 +809,7 @@ class Model(Network):
       val_x = None
       val_y = None
       val_sample_weights = None
-
+    print('RYAN IS ARRAY LIKE')
     if self.run_eagerly:
       return training_generator.fit_generator(
           self, (x, y, sample_weights),
@@ -1695,6 +1695,7 @@ class Model(Network):
                            'because it has no loss to optimize.')
         else:
           total_loss = 0.
+      print("RYAN making total loss")
 
       # Add regularization penalties and other layer-specific losses.
       if self.losses:
@@ -2097,6 +2098,7 @@ class Model(Network):
           ' without calling `model.compile` after ?', 1)
 
   def _make_train_function_helper(self, fn_name, outputs):
+    print("RYAN in MAKING TRAIN FUN")
     if not self._is_compiled:
       raise RuntimeError('You must compile your model before using it.')
     self._check_trainable_weights_consistency()
